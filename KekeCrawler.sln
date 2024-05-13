@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{51CF577F-E11A-409C-BF92-F5FB6B022F49}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{799B043F-6FA1-41F1-AAC5-D2C04359E68F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KekeCrawler.Test", "test\KekeCrawler.Test\KekeCrawler.Test.csproj", "{ED2C6F85-42C3-4731-BA17-96FD3DBEC5F5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{DDF09176-6CED-4637-A65E-B9C33F5A0C21}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrawlerTestApp.cs", "sample\CrawlerTestApp.cs\CrawlerTestApp.cs.csproj", "{D822EA30-FD22-46BD-A44B-D11C19A622E9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KekeCrawler", "src\KekeCrawler\KekeCrawler.csproj", "{5C11846F-0438-4B0B-9327-A4CB2A40362E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED2C6F85-42C3-4731-BA17-96FD3DBEC5F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED2C6F85-42C3-4731-BA17-96FD3DBEC5F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED2C6F85-42C3-4731-BA17-96FD3DBEC5F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED2C6F85-42C3-4731-BA17-96FD3DBEC5F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D822EA30-FD22-46BD-A44B-D11C19A622E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D822EA30-FD22-46BD-A44B-D11C19A622E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D822EA30-FD22-46BD-A44B-D11C19A622E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D822EA30-FD22-46BD-A44B-D11C19A622E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C11846F-0438-4B0B-9327-A4CB2A40362E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C11846F-0438-4B0B-9327-A4CB2A40362E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C11846F-0438-4B0B-9327-A4CB2A40362E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C11846F-0438-4B0B-9327-A4CB2A40362E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ED2C6F85-42C3-4731-BA17-96FD3DBEC5F5} = {51CF577F-E11A-409C-BF92-F5FB6B022F49}
+		{D822EA30-FD22-46BD-A44B-D11C19A622E9} = {DDF09176-6CED-4637-A65E-B9C33F5A0C21}
+		{5C11846F-0438-4B0B-9327-A4CB2A40362E} = {799B043F-6FA1-41F1-AAC5-D2C04359E68F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A5B31D6B-395C-4867-86B2-F38AA4527E08}
+	EndGlobalSection
+EndGlobal
