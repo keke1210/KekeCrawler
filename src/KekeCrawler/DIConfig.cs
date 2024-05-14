@@ -3,6 +3,7 @@ using Polly.Extensions.Http;
 using Polly;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using Polly.Contrib.WaitAndRetry;
 
 namespace KekeCrawler
 {
@@ -40,7 +41,8 @@ namespace KekeCrawler
                 .HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
                 // On production I would use a Jitter
-                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+                .WaitAndRetryAsync(
+                    Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 3));
         }
     }
 }
