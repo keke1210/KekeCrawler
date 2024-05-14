@@ -40,7 +40,7 @@ namespace KekeCrawler.Test
                     <body>
                         <a href='/page1'>Page 1</a>
                         <a href='https://example.com/page2'>Page 2</a>
-                        <a href='https://example.com/page3#section'>Page 3</a>
+                        <a href='https://example.com/page3/#section'>Page 3</a>
                         <a href='https://otherdomain.com/page4'>Page 4</a>
                     </body>
                 </html>";
