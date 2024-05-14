@@ -23,6 +23,12 @@ namespace CrawlerTestApp
             var crawler = serviceProvider.GetRequiredService<ICrawler>();
             var config = serviceProvider.GetRequiredService<IOptions<Config>>().Value;
 
+            var cancellationTokenSource = new CancellationTokenSource();
+
+            // TODO: maybe add a timer when the crawler stops
+            // Calls Cancel after 3 seconds
+            var timer = new Timer(state => ((CancellationTokenSource)state!).Cancel(), cancellationTokenSource, 3000, Timeout.Infinite);
+
             await crawler.CrawlAsync(async (url, content) =>
             {
                 try
@@ -30,14 +36,14 @@ namespace CrawlerTestApp
                     Console.WriteLine($"Crawled: {url}");
                     string fileName = UrlToFileName(url);
 
-                    await File.WriteAllTextAsync(fileName, content);
+                    await File.WriteAllTextAsync(fileName, content, cancellationTokenSource.Token);
                     Console.WriteLine($"Saved file: {fileName}");
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Failed to save page {url}: {ex.Message}");
                 }
-            });
+            }, cancellationTokenSource.Token);
         }
 
         private static string UrlToFileName(string url)
