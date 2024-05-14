@@ -40,7 +40,6 @@ namespace KekeCrawler
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
-                // On production I would use a Jitter
                 .WaitAndRetryAsync(
                     Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 3));
         }
