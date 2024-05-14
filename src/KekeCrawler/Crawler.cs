@@ -83,7 +83,7 @@ namespace KekeCrawler
             try
             {
                 // Ensure the URL has a trailing slash if it's not a file
-                Uri uri = FixUrlToBeFetchable(url);
+                Uri uri = ToFetchableUrl(url);
 
                 var response = await _httpClient.GetAsync(uri, cancellationToken).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
@@ -97,7 +97,7 @@ namespace KekeCrawler
             }
         }
 
-        internal static Uri FixUrlToBeFetchable(string url)
+        internal static Uri ToFetchableUrl(string url)
         {
             var uri = new Uri(url);
             if (!uri.AbsolutePath.Contains('.') && !uri.AbsolutePath.EndsWith('/'))
