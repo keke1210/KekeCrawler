@@ -14,8 +14,8 @@ namespace CrawlerTestApp
             {
                 options.Url = "https://google.com/";
                 options.MaxPagesToCrawl = 1000;
-                options.OnVisitPageTimeout = TimeSpan.FromSeconds(10);
-                options.HttpRequestTimeout = TimeSpan.FromSeconds(5);
+                options.HttpRequestTimeout = TimeSpan.FromSeconds(2);
+                options.OnVisitPageTimeout = TimeSpan.FromSeconds(3);
                 //options.Cookie = new CookieConfig { Name = "cookie_name", Value = "cookie_value" };
             });
 
@@ -28,7 +28,7 @@ namespace CrawlerTestApp
 
             // TODO: maybe add a timer when the crawler stops
             // Calls Cancel after 3 seconds
-            var timer = new Timer(state => ((CancellationTokenSource)state!).Cancel(), cancellationTokenSource, 3000, Timeout.Infinite);
+            //var timer = new Timer(state => ((CancellationTokenSource)state!).Cancel(), cancellationTokenSource, 3000, Timeout.Infinite);
 
             await crawler.CrawlAsync(async (url, content) =>
             {

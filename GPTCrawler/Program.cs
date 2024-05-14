@@ -10,8 +10,8 @@ services.ConfigKekeCrawler(options =>
 {
     options.Url = "https://google.com/";
     options.MaxPagesToCrawl = maxPagesToCrawl;
-    options.OnVisitPageTimeout = TimeSpan.FromSeconds(10);
-    options.HttpRequestTimeout = TimeSpan.FromSeconds(5);
+    options.HttpRequestTimeout = TimeSpan.FromSeconds(2);
+    options.OnVisitPageTimeout = TimeSpan.FromSeconds(3);
     //options.Cookie = new CookieConfig { Name = "cookie_name", Value = "cookie_value" };
 });
 

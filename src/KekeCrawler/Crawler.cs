@@ -22,7 +22,7 @@ namespace KekeCrawler
             _httpClient = httpClientFactory.CreateClient("crawler");
             _config = config.Value;
             _logger = logger;
-            _timeoutPolicy = Policy.TimeoutAsync(_config.OnVisitPageTimeout, TimeoutStrategy.Optimistic);
+            _timeoutPolicy = Policy.TimeoutAsync(_config.OnVisitPageTimeout, TimeoutStrategy.Pessimistic, OnTimeoutAsync);
             _htmlDocumentFactory = htmlDocumentFactory;
         }
 
@@ -40,18 +40,11 @@ namespace KekeCrawler
                 var currentUrl = urlQueue.Dequeue();
 
                 var links = Enumerable.Empty<string>();
-               
-                try
+
+                await _timeoutPolicy.ExecuteAsync(async (ct) =>
                 {
-                    await _timeoutPolicy.ExecuteAsync(async (ct) =>
-                    {
-                        links = await FetchAndExtractLinksAsync(currentUrl, onVisitPageCallback, ct).ConfigureAwait(false);
-                    }, cancellationToken).ConfigureAwait(false);
-                }
-                catch (TimeoutRejectedException ex)
-                {
-                    _logger.LogError("Request timed out: {0}", ex.Message);
-                }
+                    links = await FetchAndExtractLinksAsync(currentUrl, onVisitPageCallback, ct).ConfigureAwait(false);
+                }, cancellationToken).ConfigureAwait(false);
 
                 foreach (var link in links)
                 {
@@ -147,6 +140,12 @@ namespace KekeCrawler
                 _logger.LogError(ex.Message);
                 return Enumerable.Empty<string>();
             }
+        }
+
+        private Task OnTimeoutAsync(Context context, TimeSpan span, Task task, Exception ex)
+        {
+            _logger.LogError("Request timed out: {0}", ex.Message);
+            return Task.CompletedTask;
         }
     }
 }
