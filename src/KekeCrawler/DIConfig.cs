@@ -23,14 +23,14 @@ namespace KekeCrawler
                     client.DefaultRequestHeaders.Add("Cookie", $"{cookie.Name}={cookie.Value};");
                 }
 
-                client.Timeout = config.Timeout;
+                client.Timeout = config.HttpRequestTimeout;
             })
             .AddPolicyHandler(GetRetryPolicy());
 
             services.AddScoped<IHtmlDocumentFactory, HtmlDocumentFactory>();
             services.AddScoped<ICrawler, Crawler>();
 
-            services.AddLogging();
+            services.AddLogging(x => x.AddConsole());
 
             return services;
         }

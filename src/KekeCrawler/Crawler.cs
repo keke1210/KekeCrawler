@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Polly;
+using Polly.Timeout;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo($"{nameof(KekeCrawler)}.Tests")]
@@ -21,7 +22,7 @@ namespace KekeCrawler
             _httpClient = httpClientFactory.CreateClient("crawler");
             _config = config.Value;
             _logger = logger;
-            _timeoutPolicy = Policy.TimeoutAsync(_config.Timeout);
+            _timeoutPolicy = Policy.TimeoutAsync(_config.OnVisitPageTimeout, TimeoutStrategy.Optimistic);
             _htmlDocumentFactory = htmlDocumentFactory;
         }
 
@@ -39,10 +40,18 @@ namespace KekeCrawler
                 var currentUrl = urlQueue.Dequeue();
 
                 var links = Enumerable.Empty<string>();
-                await _timeoutPolicy.ExecuteAsync(async (ct) =>
+               
+                try
                 {
-                    links = await FetchAndExtractLinksAsync(currentUrl, onVisitPageCallback, ct).ConfigureAwait(false);
-                }, cancellationToken).ConfigureAwait(false);
+                    await _timeoutPolicy.ExecuteAsync(async (ct) =>
+                    {
+                        links = await FetchAndExtractLinksAsync(currentUrl, onVisitPageCallback, ct).ConfigureAwait(false);
+                    }, cancellationToken).ConfigureAwait(false);
+                }
+                catch (TimeoutRejectedException ex)
+                {
+                    _logger.LogError("Request timed out: {0}", ex.Message);
+                }
 
                 foreach (var link in links)
                 {

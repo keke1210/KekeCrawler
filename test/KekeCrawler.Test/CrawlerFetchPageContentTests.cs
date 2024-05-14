@@ -22,7 +22,7 @@ namespace KekeCrawler.Test
             _config = new Config
             {
                 Url = "https://example.com",
-                Timeout = TimeSpan.FromSeconds(10),
+                OnVisitPageTimeout = TimeSpan.FromSeconds(10),
                 MaxPagesToCrawl = 10
             };
 

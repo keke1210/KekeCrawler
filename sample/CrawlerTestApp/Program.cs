@@ -14,7 +14,8 @@ namespace CrawlerTestApp
             {
                 options.Url = "https://google.com/";
                 options.MaxPagesToCrawl = 1000;
-                options.Timeout = TimeSpan.FromSeconds(5);
+                options.OnVisitPageTimeout = TimeSpan.FromSeconds(10);
+                options.HttpRequestTimeout = TimeSpan.FromSeconds(5);
                 //options.Cookie = new CookieConfig { Name = "cookie_name", Value = "cookie_value" };
             });
 
