@@ -91,7 +91,7 @@ namespace KekeCrawler.Test
             }
 
             // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => _crawler.FetchAndExtractLinksAsync(url, OnVisitPageCallback, CancellationToken.None).AsTask());
+            await Assert.ThrowsAsync<Exception>(() => _crawler.FetchAndExtractLinksAsync(url, OnVisitPageCallback, CancellationToken.None));
         }
 
         [Fact]

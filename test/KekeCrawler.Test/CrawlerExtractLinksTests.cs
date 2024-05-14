@@ -106,7 +106,7 @@ namespace KekeCrawler.Test
             Assert.Empty(links);
             var logEntry = Assert.Single(_logger.LogEntries);
             Assert.Equal(LogLevel.Error, logEntry.LogLevel);
-            Assert.Equal("Test exception", logEntry.Message);
+            Assert.Equal($"Error extracting links from {baseUri}: Test exception", logEntry.Message);
         }
     }
 }

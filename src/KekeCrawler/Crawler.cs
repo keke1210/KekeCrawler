@@ -22,7 +22,7 @@ namespace KekeCrawler
             _httpClient = httpClientFactory.CreateClient("crawler");
             _config = config.Value;
             _logger = logger;
-            _timeoutPolicy = Policy.TimeoutAsync(_config.OnVisitPageTimeout, TimeoutStrategy.Pessimistic, OnTimeoutAsync);
+            _timeoutPolicy = Policy.TimeoutAsync(_config.OnVisitPageTimeout, TimeoutStrategy.Pessimistic);
             _htmlDocumentFactory = htmlDocumentFactory;
         }
 
@@ -39,12 +39,18 @@ namespace KekeCrawler
             {
                 var currentUrl = urlQueue.Dequeue();
 
-                var links = Enumerable.Empty<string>();
-
-                await _timeoutPolicy.ExecuteAsync(async (ct) =>
+                IEnumerable<string> links = Enumerable.Empty<string>();
+                try
                 {
-                    links = await FetchAndExtractLinksAsync(currentUrl, onVisitPageCallback, ct).ConfigureAwait(false);
-                }, cancellationToken).ConfigureAwait(false);
+                    links = await _timeoutPolicy.ExecuteAsync(
+                        ct => FetchAndExtractLinksAsync(currentUrl, onVisitPageCallback, ct),
+                        cancellationToken
+                    ).ConfigureAwait(false);
+                }
+                catch (TimeoutRejectedException ex)
+                {
+                    _logger.LogError("Timeout: Processing of {Url} timed out. {ExceptionMessage}", currentUrl, ex.Message);
+                }
 
                 foreach (var link in links)
                 {
@@ -57,7 +63,7 @@ namespace KekeCrawler
             }
         }
 
-        internal async ValueTask<IEnumerable<string>> FetchAndExtractLinksAsync(string currentUrl, Func<string, string, Task> onVisitPageCallback, CancellationToken cancellationToken)
+        internal async Task<IEnumerable<string>> FetchAndExtractLinksAsync(string currentUrl, Func<string, string, Task> onVisitPageCallback, CancellationToken cancellationToken)
         {
             var pageContent = await FetchPageContentAsync(currentUrl, cancellationToken).ConfigureAwait(false);
 
@@ -72,7 +78,7 @@ namespace KekeCrawler
             }
             catch (Exception ex)
             {
-                _logger.LogError("Action failed: {0}", ex.Message);
+                _logger.LogError("Callback failed for {Url}: {ExceptionMessage}", currentUrl, ex.Message);
                 throw;
             }
 
@@ -94,7 +100,7 @@ namespace KekeCrawler
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error fetching {url}: {ex.Message}");
+                _logger.LogError("Error fetching content from {Url}: {ExceptionMessage}", url, ex.Message);
                 return string.Empty;
             }
         }
@@ -137,15 +143,9 @@ namespace KekeCrawler
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError("Error extracting links from {BaseUri}: {ExceptionMessage}", baseUri, ex.Message);
                 return Enumerable.Empty<string>();
             }
-        }
-
-        private Task OnTimeoutAsync(Context context, TimeSpan span, Task task, Exception ex)
-        {
-            _logger.LogError("Request timed out: {0}", ex.Message);
-            return Task.CompletedTask;
         }
     }
 }

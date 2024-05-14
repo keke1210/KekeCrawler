@@ -15,7 +15,6 @@ services.ConfigKekeCrawler(options =>
     //options.Cookie = new CookieConfig { Name = "cookie_name", Value = "cookie_value" };
 });
 
-
 var serviceProvider = services.BuildServiceProvider();
 var crawler = serviceProvider.GetRequiredService<ICrawler>();
 var config = serviceProvider.GetRequiredService<IOptions<Config>>().Value;
@@ -42,11 +41,12 @@ catch (Exception ex) when (ex.Message.Equals("The operation was canceled."))
     Console.WriteLine(ex.Message);
 }
 
-
 await File.WriteAllTextAsync("knowledge.json", JsonSerializer.Serialize(results, new JsonSerializerOptions
 {
     WriteIndented = true
 }));
+
+
 
 class PageData
 {
