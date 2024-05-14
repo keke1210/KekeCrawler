@@ -4,6 +4,7 @@ using Polly;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Polly.Contrib.WaitAndRetry;
+using KekeCrawler.HtmlParsers;
 
 namespace KekeCrawler
 {
@@ -27,7 +28,8 @@ namespace KekeCrawler
             })
             .AddPolicyHandler(GetRetryPolicy());
 
-            services.AddScoped<IHtmlDocumentFactory, HtmlDocumentFactory>();
+            services.AddSingleton<IHtmlParser, AngleSharpHtmlParser>();
+
             services.AddScoped<ICrawler, Crawler>();
 
             services.AddLogging(x => x.AddConsole());

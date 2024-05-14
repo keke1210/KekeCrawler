@@ -1,5 +1,4 @@
 ﻿using KekeCrawler.Test.Helpers;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Net;
@@ -11,6 +10,7 @@ namespace KekeCrawler.Test
         private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
         private readonly TestLogger<Crawler> _logger;
         private readonly Mock<IOptions<Config>> _configMock;
+        private readonly Mock<IHtmlParser> _htmlParserMock;
         private readonly Config _config;
         private Crawler _crawler;
 
@@ -28,13 +28,14 @@ namespace KekeCrawler.Test
 
             _configMock = new Mock<IOptions<Config>>();
             _configMock.Setup(x => x.Value).Returns(_config);
+            _htmlParserMock = new Mock<IHtmlParser>();
         }
 
         private void SetupCrawler(HttpMessageHandlerStub handlerStub)
         {
             var httpClient = new HttpClient(handlerStub);
             _httpClientFactoryMock.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(httpClient);
-            _crawler = new Crawler(_httpClientFactoryMock.Object, _configMock.Object, _logger, new HtmlDocumentFactory());
+            _crawler = new Crawler(_httpClientFactoryMock.Object, _configMock.Object, _logger, _htmlParserMock.Object);
         }
 
         [Fact]

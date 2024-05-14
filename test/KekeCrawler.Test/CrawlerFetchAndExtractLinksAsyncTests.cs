@@ -1,4 +1,5 @@
-﻿using KekeCrawler.Test.Helpers;
+﻿using KekeCrawler.HtmlParsers;
+using KekeCrawler.Test.Helpers;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Net;
@@ -10,6 +11,7 @@ namespace KekeCrawler.Test
         private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
         private readonly TestLogger<Crawler> _logger;
         private readonly Mock<IOptions<Config>> _configMock;
+        private readonly IHtmlParser _htmlParser;
         private readonly Config _config;
         private Crawler _crawler;
 
@@ -22,18 +24,21 @@ namespace KekeCrawler.Test
             {
                 Url = "https://example.com",
                 OnVisitPageTimeout = TimeSpan.FromSeconds(10),
-                MaxPagesToCrawl = 10
+                MaxPagesToCrawl = 10,
+                PageSelector = "body"
             };
 
             _configMock = new Mock<IOptions<Config>>();
             _configMock.Setup(x => x.Value).Returns(_config);
+
+            _htmlParser = new AngleSharpHtmlParser(new TestLogger<IHtmlParser>());
         }
 
         private void SetupCrawler(HttpMessageHandlerStub handlerStub)
         {
             var httpClient = new HttpClient(handlerStub);
             _httpClientFactoryMock.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(httpClient);
-            _crawler = new Crawler(_httpClientFactoryMock.Object, _configMock.Object, _logger, new HtmlDocumentFactory());
+            _crawler = new Crawler(_httpClientFactoryMock.Object, _configMock.Object, _logger, _htmlParser);
         }
 
         [Fact]

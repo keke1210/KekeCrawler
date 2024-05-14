@@ -1,5 +1,4 @@
-﻿using HtmlAgilityPack;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Timeout;
@@ -15,15 +14,14 @@ namespace KekeCrawler
         private readonly Config _config;
         private readonly ILogger<Crawler> _logger;
         private readonly AsyncPolicy _timeoutPolicy;
-        private readonly IHtmlDocumentFactory _htmlDocumentFactory;
-
-        public Crawler(IHttpClientFactory httpClientFactory, IOptions<Config> config, ILogger<Crawler> logger, IHtmlDocumentFactory htmlDocumentFactory)
+        private readonly IHtmlParser _htmlParser;
+        public Crawler(IHttpClientFactory httpClientFactory, IOptions<Config> config, ILogger<Crawler> logger, IHtmlParser htmlParser)
         {
             _httpClientFactory = httpClientFactory;
             _config = config.Value;
             _logger = logger;
             _timeoutPolicy = Policy.TimeoutAsync(_config.OnVisitPageTimeout, TimeoutStrategy.Pessimistic);
-            _htmlDocumentFactory = htmlDocumentFactory;
+            _htmlParser = htmlParser;
         }
 
         // BFS algorithm to crawl recursively
@@ -66,7 +64,7 @@ namespace KekeCrawler
         internal async Task<IEnumerable<string>> FetchAndExtractLinksAsync(string currentUrl, Func<string, string, Task> onVisitPageCallback, CancellationToken cancellationToken)
         {
             string pageContent = await FetchPageContentAsync(currentUrl, cancellationToken).ConfigureAwait(false);
-            string selectedContent = SelectContent(pageContent, _config.PageSelector);
+            string selectedContent = _htmlParser.SelectContent(pageContent, _config.PageSelector);
 
             try
             {
@@ -78,7 +76,7 @@ namespace KekeCrawler
                 throw;
             }
 
-            var links = ExtractLinks(new Uri(currentUrl), pageContent);
+            var links = _htmlParser.ExtractLinks(new Uri(currentUrl), pageContent);
             return links;
         }
 
@@ -111,55 +109,6 @@ namespace KekeCrawler
             }
 
             return uri;
-        }
-
-        internal string SelectContent(string pageContent, string selector)
-        {
-            try
-            {
-                var document = _htmlDocumentFactory.Create();
-                document.LoadHtml(pageContent);
-                var node = document.DocumentNode.SelectSingleNode(selector);
-
-                return node?.InnerHtml ?? string.Empty;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error selecting content with selector {Selector}: {ExceptionMessage}", selector, ex.Message);
-                return string.Empty;
-            }
-        }
-
-        internal IEnumerable<string> ExtractLinks(Uri baseUri, string pageContent)
-        {
-            try
-            {
-                var document = _htmlDocumentFactory.Create();
-                document.LoadHtml(pageContent);
-
-                var links = new HashSet<string>();
-
-                foreach (var linkNode in document?.DocumentNode?.SelectNodes("//a[@href]") ?? Enumerable.Empty<HtmlNode>())
-                {
-                    var href = linkNode.GetAttributeValue("href", string.Empty);
-                    if (Uri.TryCreate(baseUri, href, out var result))
-                    {
-                        // take links that belong to the same domain 
-                        // skip links that make you navigate within the same page (the ones that start with '#')
-                        if (result.Host == baseUri.Host && !result.Fragment.StartsWith('#'))
-                        {
-                            links.Add(result.AbsoluteUri);
-                        }
-                    }
-                }
-
-                return links;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error extracting links from {BaseUri}: {ExceptionMessage}", baseUri, ex.Message);
-                return Enumerable.Empty<string>();
-            }
         }
     }
 }

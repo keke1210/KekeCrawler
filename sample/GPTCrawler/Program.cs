@@ -16,7 +16,7 @@ services.ConfigKekeCrawler(options =>
     options.MaxPagesToCrawl = maxPagesToCrawl;
     options.HttpRequestTimeout = TimeSpan.FromSeconds(2);
     options.OnVisitPageTimeout = TimeSpan.FromSeconds(3);
-    options.PageSelector = "//body";
+    options.PageSelector = "body";
     //options.Cookie = new CookieConfig { Name = "cookie_name", Value = "cookie_value" };
 });
 
