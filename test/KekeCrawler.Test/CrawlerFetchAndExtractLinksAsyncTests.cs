@@ -5,7 +5,7 @@ using System.Net;
 
 namespace KekeCrawler.Test
 {
-    public class CrawlerGetLinksTests
+    public class CrawlerFetchAndExtractLinksAsyncTests
     {
         private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
         private readonly TestLogger<Crawler> _logger;
@@ -13,7 +13,7 @@ namespace KekeCrawler.Test
         private readonly Config _config;
         private Crawler _crawler;
 
-        public CrawlerGetLinksTests()
+        public CrawlerFetchAndExtractLinksAsyncTests()
         {
             _httpClientFactoryMock = new Mock<IHttpClientFactory>();
             _logger = new TestLogger<Crawler>();
@@ -37,7 +37,7 @@ namespace KekeCrawler.Test
         }
 
         [Fact]
-        public async Task GetLinksAsync_ReturnsEmpty_WhenContentIsEmpty()
+        public async Task FetchAndExtractLinksAsync_ReturnsEmpty_WhenContentIsEmpty()
         {
             // Arrange
             var url = "https://example.com/empty";
@@ -47,14 +47,14 @@ namespace KekeCrawler.Test
             Task OnVisitPageCallback(string pageUrl, string content) => Task.CompletedTask;
 
             // Act
-            var links = await _crawler.GetLinksAsync(OnVisitPageCallback, url, CancellationToken.None);
+            var links = await _crawler.FetchAndExtractLinksAsync(url, OnVisitPageCallback, CancellationToken.None);
 
             // Assert
             Assert.Empty(links);
         }
 
         [Fact]
-        public async Task GetLinksAsync_InvokesCallback_WhenContentIsNotEmpty()
+        public async Task FetchAndExtractLinksAsync_InvokesCallback_WhenContentIsNotEmpty()
         {
             // Arrange
             var url = "https://example.com";
@@ -69,7 +69,7 @@ namespace KekeCrawler.Test
             }
 
             // Act
-            var links = await _crawler.GetLinksAsync(OnVisitPageCallback, url, CancellationToken.None);
+            var links = await _crawler.FetchAndExtractLinksAsync(url, OnVisitPageCallback, CancellationToken.None);
 
             // Assert
             Assert.True(callbackInvoked);
@@ -78,7 +78,7 @@ namespace KekeCrawler.Test
         }
 
         [Fact]
-        public async Task GetLinksAsync_ThrowsException_WhenCallbackFails()
+        public async Task FetchAndExtractLinksAsync_ThrowsException_WhenCallbackFails()
         {
             // Arrange
             var url = "https://example.com";
@@ -91,11 +91,11 @@ namespace KekeCrawler.Test
             }
 
             // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() => _crawler.GetLinksAsync(OnVisitPageCallback, url, CancellationToken.None).AsTask());
+            await Assert.ThrowsAsync<Exception>(() => _crawler.FetchAndExtractLinksAsync(url, OnVisitPageCallback, CancellationToken.None).AsTask());
         }
 
         [Fact]
-        public async Task GetLinksAsync_ReturnsLinks_WhenContentIsFetchedSuccessfully()
+        public async Task FetchAndExtractLinksAsync_ReturnsLinks_WhenContentIsFetchedSuccessfully()
         {
             // Arrange
             var url = "https://example.com";
@@ -105,7 +105,7 @@ namespace KekeCrawler.Test
             Task OnVisitPageCallback(string pageUrl, string content) => Task.CompletedTask;
 
             // Act
-            var links = await _crawler.GetLinksAsync(OnVisitPageCallback, url, CancellationToken.None);
+            var links = await _crawler.FetchAndExtractLinksAsync(url,OnVisitPageCallback, CancellationToken.None);
 
             // Assert
             Assert.Single(links);

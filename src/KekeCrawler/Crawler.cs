@@ -41,7 +41,7 @@ namespace KekeCrawler
                 var links = Enumerable.Empty<string>();
                 await _timeoutPolicy.ExecuteAsync(async (ct) =>
                 {
-                    links = await GetLinksAsync(onVisitPageCallback, currentUrl, ct).ConfigureAwait(false);
+                    links = await FetchAndExtractLinksAsync(currentUrl, onVisitPageCallback, ct).ConfigureAwait(false);
                 }, cancellationToken).ConfigureAwait(false);
 
                 foreach (var link in links)
@@ -55,7 +55,7 @@ namespace KekeCrawler
             }
         }
 
-        internal async ValueTask<IEnumerable<string>> GetLinksAsync(Func<string, string, Task> onVisitPageCallback, string currentUrl, CancellationToken cancellationToken)
+        internal async ValueTask<IEnumerable<string>> FetchAndExtractLinksAsync(string currentUrl, Func<string, string, Task> onVisitPageCallback, CancellationToken cancellationToken)
         {
             var pageContent = await FetchPageContentAsync(currentUrl, cancellationToken).ConfigureAwait(false);
 
