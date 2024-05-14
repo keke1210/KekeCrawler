@@ -8,7 +8,7 @@ namespace KekeCrawler
 {
     public static class DIConfig
     {
-        public static IServiceCollection ConfigureCrawlerLib(this ServiceCollection services, Action<Config> configureOptions)
+        public static IServiceCollection ConfigKekeCrawler(this ServiceCollection services, Action<Config> configureOptions)
         {
             services.Configure(configureOptions);
 

@@ -10,7 +10,7 @@ namespace CrawlerTestApp
         {
             var services = new ServiceCollection();
 
-            services.ConfigureCrawlerLib(options =>
+            services.ConfigKekeCrawler(options =>
             {
                 options.Url = "https://google.com/";
                 options.MaxPagesToCrawl = 1000;
