@@ -1,9 +1,13 @@
 ﻿using KekeCrawler;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 using System.Text.Json;
 
 var services = new ServiceCollection();
+services.AddLogging(x => x.AddConsole());
+
 
 int maxPagesToCrawl = 1000;
 services.ConfigKekeCrawler(options =>
@@ -12,6 +16,7 @@ services.ConfigKekeCrawler(options =>
     options.MaxPagesToCrawl = maxPagesToCrawl;
     options.HttpRequestTimeout = TimeSpan.FromSeconds(2);
     options.OnVisitPageTimeout = TimeSpan.FromSeconds(3);
+    options.PageSelector = "//body";
     //options.Cookie = new CookieConfig { Name = "cookie_name", Value = "cookie_value" };
 });
 
@@ -19,11 +24,19 @@ var serviceProvider = services.BuildServiceProvider();
 var crawler = serviceProvider.GetRequiredService<ICrawler>();
 var config = serviceProvider.GetRequiredService<IOptions<Config>>().Value;
 
+var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+
+
 var cancellationTokenSource = new CancellationTokenSource();
 
 // TODO: maybe add a timer when the crawler stops
 // Calls Cancel after 3 seconds
-//var timer = new Timer(state => ((CancellationTokenSource)state!).Cancel(), cancellationTokenSource, 3000, Timeout.Infinite);
+_ = new Timer(
+    state => 
+        ((CancellationTokenSource)state!).Cancel(), 
+        cancellationTokenSource, 
+        (int)TimeSpan.FromSeconds(10).TotalMilliseconds,
+        Timeout.Infinite);
 
 var results = new List<PageData>();
 try
@@ -32,7 +45,7 @@ try
     {
         var data = new PageData { Url = url, Content = content };
         results.Add(data);
-        Console.WriteLine($"{results.Count}/{maxPagesToCrawl}: Crawled: {url}");
+        logger.LogInformation("{resultsCount}/{maxPagesToCrawl}: Crawled: {url}", results.Count, maxPagesToCrawl, url);
         return Task.CompletedTask;
     }, cancellationTokenSource.Token);
 }
@@ -46,7 +59,7 @@ await File.WriteAllTextAsync("knowledge.json", JsonSerializer.Serialize(results,
     WriteIndented = true
 }));
 
-
+logger.LogInformation("knowledge.json file was saved.");
 
 class PageData
 {

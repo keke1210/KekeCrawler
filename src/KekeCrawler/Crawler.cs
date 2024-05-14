@@ -9,9 +9,9 @@ using System.Runtime.CompilerServices;
 
 namespace KekeCrawler
 {
-    public sealed class Crawler : ICrawler
+    internal sealed class Crawler : ICrawler
     {
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly Config _config;
         private readonly ILogger<Crawler> _logger;
         private readonly AsyncPolicy _timeoutPolicy;
@@ -19,7 +19,7 @@ namespace KekeCrawler
 
         public Crawler(IHttpClientFactory httpClientFactory, IOptions<Config> config, ILogger<Crawler> logger, IHtmlDocumentFactory htmlDocumentFactory)
         {
-            _httpClient = httpClientFactory.CreateClient("crawler");
+            _httpClientFactory = httpClientFactory;
             _config = config.Value;
             _logger = logger;
             _timeoutPolicy = Policy.TimeoutAsync(_config.OnVisitPageTimeout, TimeoutStrategy.Pessimistic);
@@ -65,16 +65,12 @@ namespace KekeCrawler
 
         internal async Task<IEnumerable<string>> FetchAndExtractLinksAsync(string currentUrl, Func<string, string, Task> onVisitPageCallback, CancellationToken cancellationToken)
         {
-            var pageContent = await FetchPageContentAsync(currentUrl, cancellationToken).ConfigureAwait(false);
-
-            if (string.IsNullOrWhiteSpace(pageContent))
-            {
-                return Enumerable.Empty<string>();
-            }
+            string pageContent = await FetchPageContentAsync(currentUrl, cancellationToken).ConfigureAwait(false);
+            string selectedContent = SelectContent(pageContent, _config.PageSelector);
 
             try
             {
-                await onVisitPageCallback(currentUrl, pageContent).ConfigureAwait(false);
+                await onVisitPageCallback(currentUrl, selectedContent).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -93,7 +89,8 @@ namespace KekeCrawler
                 // Ensure the URL has a trailing slash if it's not a file
                 Uri uri = ToFetchableUrl(url);
 
-                var response = await _httpClient.GetAsync(uri, cancellationToken).ConfigureAwait(false);
+                HttpClient httpClient = _httpClientFactory.CreateClient("crawler");
+                var response = await httpClient.GetAsync(uri, cancellationToken).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
                 return await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
@@ -114,6 +111,23 @@ namespace KekeCrawler
             }
 
             return uri;
+        }
+
+        internal string SelectContent(string pageContent, string selector)
+        {
+            try
+            {
+                var document = _htmlDocumentFactory.Create();
+                document.LoadHtml(pageContent);
+                var node = document.DocumentNode.SelectSingleNode(selector);
+
+                return node?.InnerHtml ?? string.Empty;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error selecting content with selector {Selector}: {ExceptionMessage}", selector, ex.Message);
+                return string.Empty;
+            }
         }
 
         internal IEnumerable<string> ExtractLinks(Uri baseUri, string pageContent)
