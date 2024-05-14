@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KekeCrawler", "src\KekeCraw
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CrawlerTestApp", "sample\CrawlerTestApp\CrawlerTestApp.csproj", "{22CA692C-2193-4E3F-AA08-798038FD84EB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPTCrawler", "GPTCrawler\GPTCrawler.csproj", "{CB5BB1A7-794E-484B-8082-00A745777591}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{22CA692C-2193-4E3F-AA08-798038FD84EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22CA692C-2193-4E3F-AA08-798038FD84EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22CA692C-2193-4E3F-AA08-798038FD84EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB5BB1A7-794E-484B-8082-00A745777591}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB5BB1A7-794E-484B-8082-00A745777591}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB5BB1A7-794E-484B-8082-00A745777591}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB5BB1A7-794E-484B-8082-00A745777591}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,6 +47,7 @@ Global
 		{ED2C6F85-42C3-4731-BA17-96FD3DBEC5F5} = {51CF577F-E11A-409C-BF92-F5FB6B022F49}
 		{5C11846F-0438-4B0B-9327-A4CB2A40362E} = {799B043F-6FA1-41F1-AAC5-D2C04359E68F}
 		{22CA692C-2193-4E3F-AA08-798038FD84EB} = {DDF09176-6CED-4637-A65E-B9C33F5A0C21}
+		{CB5BB1A7-794E-484B-8082-00A745777591} = {DDF09176-6CED-4637-A65E-B9C33F5A0C21}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A5B31D6B-395C-4867-86B2-F38AA4527E08}
