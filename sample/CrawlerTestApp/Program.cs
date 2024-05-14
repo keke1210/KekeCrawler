@@ -27,7 +27,7 @@ namespace CrawlerTestApp
 
             // TODO: maybe add a timer when the crawler stops
             // Calls Cancel after 3 seconds
-            //var timer = new Timer(state => ((CancellationTokenSource)state!).Cancel(), cancellationTokenSource, 3000, Timeout.Infinite);
+            var timer = new Timer(state => ((CancellationTokenSource)state!).Cancel(), cancellationTokenSource, 3000, Timeout.Infinite);
 
             await crawler.CrawlAsync(async (url, content) =>
             {
