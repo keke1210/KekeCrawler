@@ -20,7 +20,7 @@ namespace KekeCrawler.HtmlParsers
                 var document = parser.ParseDocument(pageContent);
                 if (string.IsNullOrWhiteSpace(selector))
                 {
-                    return document.DocumentElement.OuterHtml;
+                    return document?.DocumentElement?.OuterHtml ?? string.Empty;
                 }
 
                 var node = document?.QuerySelector(selector);
@@ -41,7 +41,7 @@ namespace KekeCrawler.HtmlParsers
                 var document = parser.ParseDocument(pageContent);
 
                 var links = new HashSet<string>();
-                foreach (var linkNode in document.QuerySelectorAll("a[href]"))
+                foreach (var linkNode in document.Links)
                 {
                     var href = linkNode.GetAttribute("href");
                     if (!string.IsNullOrWhiteSpace(href) && Uri.TryCreate(baseUri, href, out var result))
