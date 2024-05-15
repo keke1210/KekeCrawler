@@ -29,7 +29,7 @@ var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
 var cancellationTokenSource = new CancellationTokenSource();
 
 // TODO: maybe add a timer when the crawler stops
-// Calls Cancel after 3 seconds
+// Calls Cancel after 10 seconds
 _ = new Timer(
     state => 
         ((CancellationTokenSource)state!).Cancel(), 

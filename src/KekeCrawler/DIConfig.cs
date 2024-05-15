@@ -14,7 +14,7 @@ namespace KekeCrawler
         {
             services.Configure(configureOptions);
 
-            services.AddHttpClient("crawler", (serviceProvider, client) =>
+            services.AddHttpClient(Consts.HttpClientFactoryClientName, (serviceProvider, client) =>
             {
                 var config = serviceProvider.GetRequiredService<IOptions<Config>>().Value;
 
@@ -29,11 +29,7 @@ namespace KekeCrawler
             .AddPolicyHandler(GetRetryPolicy());
 
             services.AddSingleton<IHtmlParser, AngleSharpHtmlParser>();
-
             services.AddScoped<ICrawler, Crawler>();
-
-            services.AddLogging(x => x.AddConsole());
-
             return services;
         }
 

@@ -90,7 +90,7 @@ namespace KekeCrawler
                 // Ensure the URL has a trailing slash if it's not a file
                 Uri uri = ToFetchableUrl(url);
 
-                HttpClient httpClient = _httpClientFactory.CreateClient("crawler");
+                HttpClient httpClient = _httpClientFactory.CreateClient(Consts.HttpClientFactoryClientName);
                 var response = await httpClient.GetAsync(uri, cancellationToken).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
