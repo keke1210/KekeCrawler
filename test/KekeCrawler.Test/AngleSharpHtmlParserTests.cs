@@ -42,6 +42,19 @@ namespace KekeCrawler.Test
         }
 
         [Fact]
+        public void SelectContent_InvalidNullEmptyOrWhitespaceSelector_SelectorWillNotBeApplied()
+        {
+            // Arrange
+            var htmlContent = "<html><body><div>Content</div></body></html>";
+
+            // Act
+            var result = _htmlParser.SelectContent(htmlContent, null!);
+
+            // Assert
+            Assert.Equal(htmlContent, result);
+        }
+
+        [Fact]
         public void SelectContent_EmptyContent_ReturnsEmptyString()
         {
             // Arrange

@@ -18,6 +18,11 @@ namespace KekeCrawler.HtmlParsers
             {
                 var parser = new HtmlParser();
                 var document = parser.ParseDocument(pageContent);
+                if (string.IsNullOrWhiteSpace(selector))
+                {
+                    return document.DocumentElement.OuterHtml;
+                }
+
                 var node = document?.QuerySelector(selector);
                 return node?.InnerHtml ?? string.Empty;
             }

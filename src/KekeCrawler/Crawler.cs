@@ -18,7 +18,10 @@ namespace KekeCrawler
         public Crawler(IHttpClientFactory httpClientFactory, IOptions<Config> config, ILogger<Crawler> logger, IHtmlParser htmlParser)
         {
             _httpClientFactory = httpClientFactory;
+            
             _config = config.Value;
+            _ = _config.Url ?? throw new ArgumentNullException(nameof(_config.Url));
+            
             _logger = logger;
             _timeoutPolicy = Policy.TimeoutAsync(_config.OnVisitPageTimeout, TimeoutStrategy.Pessimistic);
             _htmlParser = htmlParser;
@@ -64,7 +67,7 @@ namespace KekeCrawler
         internal async Task<IEnumerable<string>> FetchAndExtractLinksAsync(string currentUrl, Func<string, string, Task> onVisitPageCallback, CancellationToken cancellationToken)
         {
             string pageContent = await FetchPageContentAsync(currentUrl, cancellationToken).ConfigureAwait(false);
-            string selectedContent = _htmlParser.SelectContent(pageContent, _config.PageSelector);
+            string selectedContent = _htmlParser.SelectContent(pageContent, _config.PageSelector!);
 
             try
             {
