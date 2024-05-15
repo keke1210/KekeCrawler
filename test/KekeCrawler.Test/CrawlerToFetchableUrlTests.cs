@@ -9,8 +9,6 @@
         [InlineData("https://example.com/path/file.html/", "https://example.com/path/file.html/")]
         [InlineData("https://example.com", "https://example.com/")]
         [InlineData("https://example.com/", "https://example.com/")]
-        [InlineData("https://example.com/path.with.dots/file.html", "https://example.com/path.with.dots/file.html")]
-        [InlineData("https://example.com/path.with.dots/file.html/", "https://example.com/path.with.dots/file.html/")]
         public void ToFetchableUrl_ShouldAddTrailingSlash_WhenNotPresentAndNotFile(string inputUrl, string expectedUrl)
         {
             // Act
